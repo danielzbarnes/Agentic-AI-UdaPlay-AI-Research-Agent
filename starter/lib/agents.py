@@ -7,6 +7,11 @@ from lib.messages import AIMessage, UserMessage, SystemMessage, ToolMessage
 from lib.tooling import Tool, ToolCall
 from lib.memory import ShortTermMemory
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Define the state schema
 class AgentState(TypedDict):
     user_query: str  # The current user query being processed
@@ -16,7 +21,7 @@ class AgentState(TypedDict):
     total_tokens: int  # Track the cumulative total
     
 class Agent:
-    def __init__(self, 
+    def __init__(self,                 
                  model_name: str,
                  instructions: str, 
                  tools: List[Tool] = None,
@@ -61,7 +66,8 @@ class Agent:
         llm = LLM(
             model=self.model_name,
             temperature=self.temperature,
-            tools=self.tools
+            tools=self.tools,
+            api_key=os.getenv("OPENAI_API_KEY")
         )
 
         response = llm.invoke(state["messages"])
